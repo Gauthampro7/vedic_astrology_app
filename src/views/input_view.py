@@ -1,10 +1,13 @@
 """
-Improved birth data input view using CustomTkinter with professional date/time pickers.
-Modern, clean UI for data collection with real date and time selection widgets.
+Modern Birth Data Input View - Fully CustomTkinter with ComboBoxes
+Uses CustomTkinter ComboBoxes for all time fields (Hour, Minute, Second).
+Professional, sleek dark-themed UI with improved contrast and refined layout.
 """
+
 import customtkinter as ctk
 from tkcalendar import DateEntry
-from typing import Callable, Optional
+from typing import Callable
+import tkinter as tk
 import tkinter.messagebox as messagebox
 import logging
 from datetime import datetime, timedelta
@@ -15,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class BirthDataInputView(ctk.CTkFrame):
-    """Professional input form for birth data collection."""
+    """Modern, sleek input form using all CustomTkinter controls."""
 
     def __init__(self, parent, on_submit: Callable, **kwargs):
         super().__init__(parent, **kwargs)
@@ -24,115 +27,136 @@ class BirthDataInputView(ctk.CTkFrame):
         self._layout_widgets()
 
     def _create_widgets(self):
-        """Create all UI widgets with proper organization."""
-        
+        """Create all UI widgets with modern styling and improved contrast."""
+
         # ============ TITLE SECTION ============
         self.title_label = ctk.CTkLabel(
             self,
-            text="Birth Chart Calculator",
+            text="✨ Birth Chart Calculator",
             font=("Helvetica", 28, "bold"),
             text_color="#FFD700"
         )
 
-        # ============ FORM SECTION ============
-        self.form_frame = ctk.CTkFrame(self, fg_color="transparent")
+        # ============ FORM CONTAINER ============
+        self.form_frame = ctk.CTkFrame(
+            self,
+            fg_color="transparent",
+            corner_radius=0
+        )
 
-        # --- Date Section ---
+        # --- DATE SECTION ---
+        self.date_section_frame = ctk.CTkFrame(self.form_frame, fg_color="transparent")
+
         self.date_label = ctk.CTkLabel(
-            self.form_frame,
+            self.date_section_frame,
             text="📅 Date of Birth",
-            font=("Helvetica", 13, "bold"),
-            text_color="#FFFFFF"
+            font=("Helvetica", 14, "bold"),
+            text_color="#FFD700"  # Better contrast - gold instead of white
         )
 
-        # Using tkcalendar DateEntry for professional date selection
+        # Modern DateEntry with custom colors
         self.date_entry = DateEntry(
-            self.form_frame,
-            width=30,
-            background='darkblue',
-            foreground='white',
+            self.date_section_frame,
+            width=35,
+            background="#2B2B2B",      # Dark background
+            foreground="#FFFFFF",       # Light text
             borderwidth=2,
-            year=datetime.now().year - 30,
-            month=1,
-            day=15,
-            font=("Helvetica", 11)
+            year=2003,                  # Changed default to 2003
+            month=5,                    # May
+            day=15,                     # 15th
+            font=("Helvetica", 12),
+            headersbackground="#1f1f1f",
+            selectforeground="#FFD700",
+            selectbackground="#2B2B2B"
         )
 
-        # --- Time Section (Hour) ---
+        # --- TIME SECTION ---
+        self.time_section_frame = ctk.CTkFrame(self.form_frame, fg_color="transparent")
+
         self.time_label = ctk.CTkLabel(
-            self.form_frame,
+            self.time_section_frame,
             text="⏰ Time of Birth",
-            font=("Helvetica", 13, "bold"),
-            text_color="#FFFFFF"
+            font=("Helvetica", 14, "bold"),
+            text_color="#FFD700"  # Better contrast
         )
 
-        # Time selection using spinboxes (Hours, Minutes, Seconds)
-        self.time_frame = ctk.CTkFrame(self.form_frame, fg_color="transparent")
+        # Modern time entry using ComboBoxes
+        self.time_frame = ctk.CTkFrame(self.time_section_frame, fg_color="transparent")
 
-        # Hour
+        # Hour ComboBox (0-23)
         self.hour_label = ctk.CTkLabel(
             self.time_frame,
-            text="Hour:",
-            font=("Helvetica", 11),
-            text_color="#CCCCCC"
+            text="Hour",
+            font=("Helvetica", 11, "bold"),
+            text_color="#E0E0E0"  # Brighter than #CCCCCC for better contrast
         )
-        self.hour_spinbox = ctk.CTkSpinbox(
+        self.hour_combo = ctk.CTkComboBox(
             self.time_frame,
-            from_=0,
-            to=23,
+            values=[f"{i:02d}" for i in range(0, 24)],
             width=70,
             font=("Helvetica", 12),
-            command=self._validate_time
-        )
-        self.hour_spinbox.set(12)
-
-        # Minute
-        self.minute_label = ctk.CTkLabel(
-            self.time_frame,
-            text="Minute:",
-            font=("Helvetica", 11),
-            text_color="#CCCCCC"
-        )
-        self.minute_spinbox = ctk.CTkSpinbox(
-            self.time_frame,
-            from_=0,
-            to=59,
-            width=70,
-            font=("Helvetica", 12),
-            command=self._validate_time
-        )
-        self.minute_spinbox.set(0)
-
-        # Second
-        self.second_label = ctk.CTkLabel(
-            self.time_frame,
-            text="Second:",
-            font=("Helvetica", 11),
-            text_color="#CCCCCC"
-        )
-        self.second_spinbox = ctk.CTkSpinbox(
-            self.time_frame,
-            from_=0,
-            to=59,
-            width=70,
-            font=("Helvetica", 12),
-            command=self._validate_time
-        )
-        self.second_spinbox.set(0)
-
-        # --- Timezone Section ---
-        self.timezone_label = ctk.CTkLabel(
-            self.form_frame,
-            text="🌍 Timezone (±HH:MM)",
-            font=("Helvetica", 13, "bold"),
+            state="readonly",
+            corner_radius=8,
+            fg_color="#2B2B2B",
+            button_color="#3A3A3A",  # Slightly brighter for contrast
             text_color="#FFFFFF"
         )
+        self.hour_combo.set("17")  # Default: 17:55:00
 
-        # Timezone with helpful presets
-        self.tz_frame = ctk.CTkFrame(self.form_frame, fg_color="transparent")
+        # Minute ComboBox (0-59)
+        self.minute_label = ctk.CTkLabel(
+            self.time_frame,
+            text="Minute",
+            font=("Helvetica", 11, "bold"),
+            text_color="#E0E0E0"
+        )
+        self.minute_combo = ctk.CTkComboBox(
+            self.time_frame,
+            values=[f"{i:02d}" for i in range(0, 60)],
+            width=70,
+            font=("Helvetica", 12),
+            state="readonly",
+            corner_radius=8,
+            fg_color="#2B2B2B",
+            button_color="#3A3A3A",
+            text_color="#FFFFFF"
+        )
+        self.minute_combo.set("55")  # Default: 17:55:00
 
-        # Dropdown for common timezones
-        self.tz_dropdown = ctk.CTkComboBox(
+        # Second ComboBox (0-59)
+        self.second_label = ctk.CTkLabel(
+            self.time_frame,
+            text="Second",
+            font=("Helvetica", 11, "bold"),
+            text_color="#E0E0E0"
+        )
+        self.second_combo = ctk.CTkComboBox(
+            self.time_frame,
+            values=[f"{i:02d}" for i in range(0, 60)],
+            width=70,
+            font=("Helvetica", 12),
+            state="readonly",
+            corner_radius=8,
+            fg_color="#2B2B2B",
+            button_color="#3A3A3A",
+            text_color="#FFFFFF"
+        )
+        self.second_combo.set("00")
+
+        # --- TIMEZONE SECTION ---
+        self.tz_section_frame = ctk.CTkFrame(self.form_frame, fg_color="transparent")
+
+        self.timezone_label = ctk.CTkLabel(
+            self.tz_section_frame,
+            text="🌍 Timezone (±HH:MM)",
+            font=("Helvetica", 14, "bold"),
+            text_color="#FFD700"  # Better contrast
+        )
+
+        self.tz_frame = ctk.CTkFrame(self.tz_section_frame, fg_color="transparent")
+
+        # Timezone ComboBox with common presets
+        self.tz_combo = ctk.CTkComboBox(
             self.tz_frame,
             values=[
                 "+05:30 (India)",
@@ -144,42 +168,63 @@ class BirthDataInputView(ctk.CTkFrame):
                 "+00:00 (GMT)",
                 "+01:00 (CET)",
                 "+05:00 (Pakistan)",
+                "+09:00 (Japan)",
+                "+10:00 (Sydney)",
                 "Custom"
             ],
-            width=200,
-            font=("Helvetica", 11),
+            width=280,
+            font=("Helvetica", 12),
+            state="readonly",
+            corner_radius=8,
+            fg_color="#2B2B2B",
+            button_color="#3A3A3A",
+            text_color="#FFFFFF",
             command=self._on_timezone_select
         )
-        self.tz_dropdown.set("+05:30 (India)")
+        self.tz_combo.set("+05:30 (India)")  # Default: +05:30 (India)
 
-        # Custom timezone entry (hidden by default)
+        # Custom timezone entry (appears when "Custom" selected)
         self.custom_tz_entry = ctk.CTkEntry(
             self.tz_frame,
-            placeholder_text="+05:30",
-            width=120,
-            height=35,
-            font=("Helvetica", 11),
-            border_width=1
+            placeholder_text="Enter timezone (e.g., +05:30)",
+            width=280,
+            height=38,
+            font=("Helvetica", 12),
+            corner_radius=8,
+            border_width=2,
+            fg_color="#2B2B2B",
+            border_color="#3A3A3A",
+            text_color="#FFFFFF",
+            placeholder_text_color="#888888"
         )
         self.custom_tz_entry.grid(row=0, column=1, padx=10, sticky="ew")
         self.custom_tz_entry.grid_remove()  # Hidden by default
 
-        # --- Place Section ---
+        # --- PLACE SECTION ---
+        self.place_section_frame = ctk.CTkFrame(self.form_frame, fg_color="transparent")
+
         self.place_label = ctk.CTkLabel(
-            self.form_frame,
+            self.place_section_frame,
             text="📍 Place of Birth",
-            font=("Helvetica", 13, "bold"),
-            text_color="#FFFFFF"
+            font=("Helvetica", 14, "bold"),
+            text_color="#FFD700"  # Better contrast
         )
 
         self.place_entry = ctk.CTkEntry(
-            self.form_frame,
+            self.place_section_frame,
             placeholder_text="e.g., Mumbai, India",
             width=400,
             height=40,
+            font=("Helvetica", 12),
+            corner_radius=10,
             border_width=2,
-            font=("Helvetica", 12)
+            fg_color="#2B2B2B",
+            border_color="#3A3A3A",
+            text_color="#FFFFFF",
+            placeholder_text_color="#888888"
         )
+        # Set default place
+        self.place_entry.insert(0, "Thodupuzha")
 
         # ============ BUTTON SECTION ============
         self.button_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -192,7 +237,8 @@ class BirthDataInputView(ctk.CTkFrame):
             font=("Helvetica", 14, "bold"),
             fg_color="#4CAF50",
             hover_color="#45a049",
-            text_color="white"
+            text_color="white",
+            corner_radius=10
         )
 
         self.clear_button = ctk.CTkButton(
@@ -203,7 +249,8 @@ class BirthDataInputView(ctk.CTkFrame):
             font=("Helvetica", 12),
             fg_color="#757575",
             hover_color="#616161",
-            text_color="white"
+            text_color="white",
+            corner_radius=8
         )
 
         # ============ STATUS SECTION ============
@@ -217,97 +264,98 @@ class BirthDataInputView(ctk.CTkFrame):
         self.progress_bar = ctk.CTkProgressBar(
             self,
             mode="indeterminate",
-            height=4
+            height=4,
+            corner_radius=2,
+            fg_color="#1f1f1f",
+            progress_color="#4CAF50"
         )
 
     def _layout_widgets(self):
-        """Arrange widgets using grid layout."""
+        """Arrange all widgets with refined spacing and better positioning."""
+
         # Title
-        self.title_label.pack(pady=25, padx=20)
+        self.title_label.pack(pady=20, padx=20)  # Reduced from 25
 
-        # Form Frame
-        self.form_frame.pack(fill="both", expand=True, padx=30, pady=10)
+        # Form container
+        self.form_frame.pack(fill="both", expand=True, padx=40, pady=10)  # Reduced from 15
 
-        # --- Date Section ---
-        self.date_label.pack(anchor="w", pady=(20, 8))
-        self.date_entry.pack(anchor="w", pady=(0, 15), fill="x")
+        # --- Date Section Layout ---
+        self.date_section_frame.pack(anchor="w", pady=(0, 20), fill="x")  # Reduced from 25
+        self.date_label.pack(anchor="w", pady=(0, 8))  # Reduced from 10
+        self.date_entry.pack(anchor="w", fill="x")
 
-        # --- Time Section ---
-        self.time_label.pack(anchor="w", pady=(10, 8))
-        self.time_frame.pack(anchor="w", pady=(0, 15), fill="x")
+        # --- Time Section Layout ---
+        self.time_section_frame.pack(anchor="w", pady=(0, 20), fill="x")  # Reduced from 25
+        self.time_label.pack(anchor="w", pady=(0, 10))  # Reduced from 12
+        
+        self.time_frame.pack(anchor="w", fill="x")
+        
+        # Grid layout for time controls
+        self.hour_label.grid(row=0, column=0, sticky="w", pady=(0, 4))  # Reduced from 5
+        self.hour_combo.grid(row=1, column=0, sticky="ew", padx=(0, 15))  # Increased from 20
 
-        self.hour_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
-        self.hour_spinbox.grid(row=0, column=1, sticky="w", padx=(0, 30))
+        self.minute_label.grid(row=0, column=1, sticky="w", pady=(0, 4))
+        self.minute_combo.grid(row=1, column=1, sticky="ew", padx=(0, 15))
 
-        self.minute_label.grid(row=0, column=2, sticky="w", padx=(0, 10))
-        self.minute_spinbox.grid(row=0, column=3, sticky="w", padx=(0, 30))
+        self.second_label.grid(row=0, column=2, sticky="w", pady=(0, 4))
+        self.second_combo.grid(row=1, column=2, sticky="ew")
 
-        self.second_label.grid(row=0, column=4, sticky="w", padx=(0, 10))
-        self.second_spinbox.grid(row=0, column=5, sticky="w")
+        self.time_frame.grid_columnconfigure(0, weight=1)
+        self.time_frame.grid_columnconfigure(1, weight=1)
+        self.time_frame.grid_columnconfigure(2, weight=1)
 
-        # --- Timezone Section ---
-        self.timezone_label.pack(anchor="w", pady=(10, 8))
-        self.tz_frame.pack(anchor="w", pady=(0, 15), fill="x")
-
-        self.tz_dropdown.grid(row=0, column=0, sticky="ew")
+        # --- Timezone Section Layout ---
+        self.tz_section_frame.pack(anchor="w", pady=(0, 20), fill="x")  # Reduced from 25
+        self.timezone_label.pack(anchor="w", pady=(0, 8))  # Reduced from 10
+        
+        self.tz_frame.pack(anchor="w", fill="x")
+        self.tz_combo.grid(row=0, column=0, sticky="ew")
         self.tz_frame.grid_columnconfigure(0, weight=1)
 
-        # --- Place Section ---
-        self.place_label.pack(anchor="w", pady=(10, 8))
-        self.place_entry.pack(anchor="w", pady=(0, 25), fill="x")
+        # --- Place Section Layout ---
+        self.place_section_frame.pack(anchor="w", pady=(0, 25), fill="x")  # Reduced from 30
+        self.place_label.pack(anchor="w", pady=(0, 8))  # Reduced from 10
+        self.place_entry.pack(anchor="w", fill="x")
 
-        # Button Frame
-        self.button_frame.pack(fill="x", padx=30, pady=10)
+        # Button section (MOVED UP - closer to form)
+        self.button_frame.pack(fill="x", padx=40, pady=(15, 10))  # Changed from (10, 15)
+        self.submit_button.pack(fill="x", pady=10)  # Reduced from 12
+        self.clear_button.pack(fill="x", pady=(0, 8))  # Reduced from (0, 10)
 
-        self.submit_button.pack(fill="x", pady=10)
-        self.clear_button.pack(fill="x", pady=5)
-
-        # Status
-        self.status_label.pack(pady=10)
-        self.progress_bar.pack(fill="x", padx=30)
-
-    def _validate_time(self):
-        """Validate time spinbox values."""
-        try:
-            hour = int(self.hour_spinbox.get())
-            minute = int(self.minute_spinbox.get())
-            second = int(self.second_spinbox.get())
-
-            # Clamp values
-            self.hour_spinbox.set(max(0, min(23, hour)))
-            self.minute_spinbox.set(max(0, min(59, minute)))
-            self.second_spinbox.set(max(0, min(59, second)))
-        except ValueError:
-            pass
+        # Status section
+        self.status_label.pack(pady=8)  # Reduced from 10
+        self.progress_bar.pack(fill="x", padx=40, pady=(0, 8))  # Reduced from (0, 10)
 
     def _on_timezone_select(self, choice):
-        """Handle timezone dropdown selection."""
+        """Show/hide custom timezone entry based on selection."""
         if choice == "Custom":
+            self.tz_combo.grid_remove()
             self.custom_tz_entry.grid()
+            self.custom_tz_entry.focus()
         else:
             self.custom_tz_entry.grid_remove()
+            self.tz_combo.grid()
 
     def _get_timezone(self) -> str:
-        """Get timezone value from dropdown or custom entry."""
-        selected = self.tz_dropdown.get()
-        if selected == "Custom":
+        """Extract timezone value from combo or custom entry."""
+        if self.custom_tz_entry.winfo_viewable():
             return self.custom_tz_entry.get().strip()
         else:
-            # Extract timezone part (before the space and description)
-            return selected.split()[0]
+            selected = self.tz_combo.get()
+            return selected.split()[0]  # Extract timezone part only
 
     def _validate_inputs(self) -> tuple:
-        """Validate all user inputs."""
+        """Validate all form inputs before submission."""
         try:
-            # Get date
+            # Get and format date
             date_obj = self.date_entry.get_date()
             date_str = date_obj.strftime('%Y/%m/%d')
 
-            # Get time
-            hour = int(self.hour_spinbox.get())
-            minute = int(self.minute_spinbox.get())
-            second = int(self.second_spinbox.get())
-            time_str = f"{hour:02d}:{minute:02d}:{second:02d}"
+            # Get time from combo boxes
+            hour = self.hour_combo.get()
+            minute = self.minute_combo.get()
+            second = self.second_combo.get()
+            time_str = f"{hour}:{minute}:{second}"
 
             # Get timezone
             tz_str = self._get_timezone().strip()
@@ -315,7 +363,7 @@ class BirthDataInputView(ctk.CTkFrame):
             # Get place
             place_str = self.place_entry.get().strip()
 
-            # Validate all
+            # Validate all inputs
             is_valid, error_msg = Validators.validate_all(
                 date_str, time_str, tz_str, place_str
             )
@@ -335,52 +383,73 @@ class BirthDataInputView(ctk.CTkFrame):
             return (False, f"Error parsing input: {str(e)}", None)
 
     def _handle_submit(self):
-        """Handle form submission with feedback."""
+        """Handle form submission with real-time feedback."""
         is_valid, error_msg, data = self._validate_inputs()
 
         if not is_valid:
-            messagebox.showerror("Validation Error", error_msg)
+            messagebox.showerror("❌ Validation Error", error_msg)
             self.status_label.configure(
                 text=f"✗ {error_msg}",
                 text_color="red"
             )
             return
 
-        self.status_label.configure(text="⏳ Calculating chart...", text_color="orange")
+        # Start calculation
+        self.status_label.configure(
+            text="⏳ Calculating chart...",
+            text_color="#FFD700"
+        )
         self.submit_button.configure(state="disabled")
         self.progress_bar.start()
 
         try:
+            # Call the submission handler
             self.on_submit(data)
+
+            # Success feedback
             self.status_label.configure(
-                text="✓ Chart calculated successfully!",
-                text_color="green"
+                text="✓ Chart calculated successfully! Switching to Chart view...",
+                text_color="#00FF00"  # Brighter green for better contrast
             )
             logger.info(f"Chart calculated for {data['place']}")
 
         except Exception as e:
+            # Error feedback
             error_text = str(e)
             self.status_label.configure(
                 text=f"✗ Error: {error_text}",
-                text_color="red"
+                text_color="#FF6B6B"  # Brighter red for better contrast
             )
-            messagebox.showerror("Calculation Error", error_text)
+            messagebox.showerror("❌ Calculation Error", error_text)
             logger.error(f"Chart calculation error: {error_text}")
 
         finally:
+            # Reset UI
             self.submit_button.configure(state="normal")
             self.progress_bar.stop()
 
     def _clear_form(self):
-        """Clear all form fields."""
-        self.date_entry.set_date(datetime.now() - timedelta(days=365*30))
-        self.hour_spinbox.set(12)
-        self.minute_spinbox.set(0)
-        self.second_spinbox.set(0)
-        self.tz_dropdown.set("+05:30 (India)")
+        """Clear all form fields to defaults."""
+        # Reset date to 15/05/2003
+        self.date_entry.set_date(datetime(2003, 5, 15).date())
+
+        # Reset time to 17:55:00
+        self.hour_combo.set("17")
+        self.minute_combo.set("55")
+        self.second_combo.set("00")
+
+        # Reset timezone
+        self.tz_combo.set("+05:30 (India)")
         self.custom_tz_entry.grid_remove()
-        self.place_entry.delete(0, 'end')
+        self.tz_combo.grid()
+
+        # Reset place to Thodupuzha
+        self.place_entry.delete(0, "end")
+        self.place_entry.insert(0, "Thodupuzha")
+
+        # Clear status
         self.status_label.configure(text="")
+
         logger.debug("Form cleared")
 
     def get_data(self) -> dict:
@@ -389,23 +458,34 @@ class BirthDataInputView(ctk.CTkFrame):
         return data if is_valid else {}
 
     def set_data(self, data: dict):
-        """Populate form with data."""
-        if 'date' in data:
-            date_obj = datetime.strptime(data['date'], '%Y/%m/%d').date()
-            self.date_entry.set_date(date_obj)
+        """Pre-populate form with given data."""
+        try:
+            # Set date
+            if 'date' in data:
+                date_obj = datetime.strptime(data['date'], '%Y/%m/%d').date()
+                self.date_entry.set_date(date_obj)
 
-        if 'time' in data:
-            time_obj = datetime.strptime(data['time'], '%H:%M:%S')
-            self.hour_spinbox.set(time_obj.hour)
-            self.minute_spinbox.set(time_obj.minute)
-            self.second_spinbox.set(time_obj.second)
+            # Set time
+            if 'time' in data:
+                time_obj = datetime.strptime(data['time'], '%H:%M:%S')
+                self.hour_combo.set(f"{time_obj.hour:02d}")
+                self.minute_combo.set(f"{time_obj.minute:02d}")
+                self.second_combo.set(f"{time_obj.second:02d}")
 
-        if 'timezone' in data:
-            self.tz_dropdown.set("Custom")
-            self.custom_tz_entry.grid()
-            self.custom_tz_entry.delete(0, 'end')
-            self.custom_tz_entry.insert(0, data['timezone'])
+            # Set timezone
+            if 'timezone' in data:
+                self.tz_combo.set("Custom")
+                self.custom_tz_entry.grid()
+                self.tz_combo.grid_remove()
+                self.custom_tz_entry.delete(0, "end")
+                self.custom_tz_entry.insert(0, data['timezone'])
 
-        if 'place' in data:
-            self.place_entry.delete(0, 'end')
-            self.place_entry.insert(0, data['place'])
+            # Set place
+            if 'place' in data:
+                self.place_entry.delete(0, "end")
+                self.place_entry.insert(0, data['place'])
+
+            logger.debug("Form pre-populated with data")
+
+        except Exception as e:
+            logger.error(f"Error setting form data: {str(e)}")
