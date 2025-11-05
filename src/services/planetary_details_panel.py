@@ -62,7 +62,7 @@ class PlanetaryDetailsPanel(ctk.CTkFrame):
             cell = ctk.CTkLabel(
                 self.header_frame,
                 text=col_name,
-                font=("Helvetica", 10, "bold"),
+                font=("Helvetica", 15, "bold"),
                 text_color="#FFD700",
                 width=width
             )
@@ -150,8 +150,8 @@ class PlanetaryDetailsPanel(ctk.CTkFrame):
             ):
                 cell = ctk.CTkLabel(
                     row_frame,
-                    text=str(col_data),
-                    font=("Courier", 9),
+                    text=str(col_data).title(),
+                    font=("Helvetica", 12),
                     text_color="#E0E0E0",
                     width=width,
                     anchor="w"
