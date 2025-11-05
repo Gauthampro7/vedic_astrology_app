@@ -10,8 +10,8 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from config.settings import setup_logging, APP_NAME, APP_VERSION
-from views.main_window import MainWindow
-from controllers.app_controller import AppController
+from src.views.main_window import MainWindow
+from src.controllers.app_controller import AppController
 
 logger = logging.getLogger(__name__)
 
