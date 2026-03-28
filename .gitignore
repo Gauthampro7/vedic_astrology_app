@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 venv/
+venv311/
 ENV/
 build/
 develop-eggs/
@@ -39,6 +40,7 @@ logs/
 data/
 *.db
 *.sqlite
+*.vac
 
 # OS
 .DS_Store
@@ -48,3 +50,8 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+.tox/
+.nox/
+.cache/
+.mypy_cache/
+.ipynb_checkpoints/

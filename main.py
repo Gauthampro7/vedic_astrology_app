@@ -10,15 +10,33 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from config.settings import setup_logging, APP_NAME, APP_VERSION
-from src.views.main_window import MainWindow
-from src.controllers.app_controller import AppController
+from views.main_window import MainWindow
+from controllers.app_controller import AppController
 
 logger = logging.getLogger(__name__)
+
+
+def check_dependencies():
+    """Verify that required astrology libraries are installed."""
+    try:
+        import flatlib
+        import geopy
+        import tkcalendar
+        return True
+    except ImportError as e:
+        logger.critical(f"Missing dependency: {str(e)}")
+        print(f"\nCRITICAL ERROR: Missing dependency: {str(e)}")
+        print("Please run: pip install -r requirements.txt\n")
+        return False
 
 
 def main():
     try:
         setup_logging()
+        
+        if not check_dependencies():
+            sys.exit(1)
+            
         logger.info(f"Starting {APP_NAME} v{APP_VERSION}")
         
         # First, create controller with `None` as the view
@@ -37,7 +55,6 @@ def main():
         logger.error(f"Fatal error: {str(e)}", exc_info=True)
         print(f"Fatal error: {str(e)}")
         sys.exit(1)
-
 
 
 if __name__ == "__main__":

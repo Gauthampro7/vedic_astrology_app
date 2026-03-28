@@ -32,6 +32,9 @@ class AstroCalculator:
             raise ValueError(f"Year {year} outside valid range (1800-2200)")
 
         year_diff = year - AYANAMSA_BASE_YEAR
+        # WARNING: This uses a simplified linear interpolation for Ayanamsa.
+        # For professional accuracy, consider using pyswisseph with the 
+        # official Lahiri (Chitra Paksha) ayanamsa calculation.
         ayanamsa = AYANAMSA_BASE_VALUE + (year_diff * AYANAMSA_ANNUAL_RATE)
 
         logger.debug(f"Calculated ayanamsa for {year}: {ayanamsa:.6f}°")

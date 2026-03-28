@@ -1,7 +1,7 @@
 # Vedic Astrology Calculator Requirements
 
 # Core Astrology Calculation
-flatlib>=0.3.2
+flatlib>=0.2.3
 
 # Location Services
 geopy>=2.4.0
